@@ -1,0 +1,73 @@
+﻿@model IEnumerable<NetworkOfLibrariesWebApplication.Book>
+
+@{
+    ViewData["Title"] = "Книги за бібліотекою";
+}
+
+<h1>Книги за бібліотекою @ViewBag.Name</h1>
+
+<p>
+    @Html.ActionLink("Додати нову книгу", "Create", new {Libraries = ViewBag.Libraries})
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Year)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Pages)
+            </th>
+           <!-- <th>
+                @Html.DisplayNameFor(model => model.Annotation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Circulation)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.Publisher)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Style)
+            </th> -->
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Year)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Pages)
+            </td>
+                <!--
+            <td>
+                @Html.DisplayFor(modelItem => item.Annotation)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Circulation)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Publisher.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Style.Id)
+            </td> -->
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Змінити</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Переглянути деталі</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,68 @@
+﻿@model NetworkOfLibrariesWebApplication.Book
+
+@{
+    ViewData["Title"] = "Деталі";
+}
+
+<h1>Деталі</h1>
+
+<div>
+    <h4>Книга</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Authors)
+        </dt>
+        <dd class="col-sm-10">
+            <a asp-controller="Authors" asp-action="Details" asp-route-id="@Model.Authors">Переглянути деталі автора</a>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Year)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Year)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Pages)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Pages)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Annotation)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Annotation)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Circulation)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Circulation)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Publisher)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Publisher.Title)
+            <a asp-controller="Publishers" asp-action="Details" asp-route-id="@Model.PublisherId">Переглянути деталі видавництва</a>
+
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Style)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Style.Name)
+            <a asp-controller="Styles" asp-action="Details" asp-route-id="@Model.StyleId">Переглянути деталі стилю</a>
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Змінити</a> 
+    <!--<a asp-action="Index">Повернутися назад</a> ->
+</div>

@@ -9,92 +9,98 @@ using NetworkOfLibrariesWebApplication;
 
 namespace NetworkOfLibrariesWebApplication.Controllers
 {
-    public class LibrariesController : Controller
+    public class AuthorsController : Controller
     {
         private readonly DbnetworkOfLibrariesContext _context;
 
-        public LibrariesController(DbnetworkOfLibrariesContext context)
+        public AuthorsController(DbnetworkOfLibrariesContext context)
         {
             _context = context;
         }
 
-        // GET: Libraries
+        // GET: Authors
         public async Task<IActionResult> Index()
         {
-            var dbnetworkOfLibrariesContext = _context.Libraries.Include(l => l.City);
-            return View(await dbnetworkOfLibrariesContext.ToListAsync());
+              return _context.Authors != null ? 
+                          View(await _context.Authors.ToListAsync()) :
+                          Problem("Entity set 'DbnetworkOfLibrariesContext.Authors'  is null.");
         }
 
-        // GET: Libraries/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Authors/Details/5
+        public async Task<IActionResult> Details(ICollection<Author>? Authors)
         {
-            if (id == null || _context.Libraries == null)
+            var author = await _context.Authors
+                .FirstOrDefaultAsync();
+            if (author == null)
             {
                 return NotFound();
             }
 
-            var library = await _context.Libraries
-                .Include(bookLibrary => bookLibrary.BookLibraries)
-                .ThenInclude(b => b.Book)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (library == null)
-            {
-                return NotFound();
-            }
-
-            //return View(library);
-            return RedirectToAction("Index", "Books", new {id = library.Id, name = library.Name, adress = library.Adress, website = library.Website, schedule = library.Schedule, cityid = library.CityId});
+            return View(author);
         }
+      /*  public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null || _context.Authors == null)
+            {
+                return NotFound();
+            }
 
-        // GET: Libraries/Create
+            var author = await _context.Authors
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (author == null)
+            {
+                return NotFound();
+            }
+
+            return View(author);
+        }*/
+
+        // GET: Authors/Create
         public IActionResult Create()
         {
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id");
             return View();
         }
 
-        // POST: Libraries/Create
+        // POST: Authors/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Adress,Website,Schedule,CityId")] Library library)
+        public async Task<IActionResult> Create([Bind("Id,FirstName,Surname,Datebirth,Education")] Author author)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(library);
+                _context.Add(author);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", library.CityId);
-            return View(library);
+            return View(author);
         }
 
-        // GET: Libraries/Edit/5
+        // GET: Authors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Libraries == null)
+            if (id == null || _context.Authors == null)
             {
                 return NotFound();
             }
 
-            var library = await _context.Libraries.FindAsync(id);
-            if (library == null)
+            var author = await _context.Authors.FindAsync(id);
+            if (author == null)
             {
                 return NotFound();
             }
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", library.CityId);
-            return View(library);
+            return View(author);
         }
 
-        // POST: Libraries/Edit/5
+        // POST: Authors/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Adress,Website,Schedule,CityId")] Library library)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,Surname,Datebirth,Education")] Author author)
         {
-            if (id != library.Id)
+            if (id != author.Id)
             {
                 return NotFound();
             }
@@ -103,12 +109,12 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             {
                 try
                 {
-                    _context.Update(library);
+                    _context.Update(author);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!LibraryExists(library.Id))
+                    if (!AuthorExists(author.Id))
                     {
                         return NotFound();
                     }
@@ -119,51 +125,49 @@ namespace NetworkOfLibrariesWebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", library.CityId);
-            return View(library);
+            return View(author);
         }
 
-        // GET: Libraries/Delete/5
+        // GET: Authors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Libraries == null)
+            if (id == null || _context.Authors == null)
             {
                 return NotFound();
             }
 
-            var library = await _context.Libraries
-                .Include(l => l.City)
+            var author = await _context.Authors
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (library == null)
+            if (author == null)
             {
                 return NotFound();
             }
 
-            return View(library);
+            return View(author);
         }
 
-        // POST: Libraries/Delete/5
+        // POST: Authors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Libraries == null)
+            if (_context.Authors == null)
             {
-                return Problem("Entity set 'DbnetworkOfLibrariesContext.Libraries'  is null.");
+                return Problem("Entity set 'DbnetworkOfLibrariesContext.Authors'  is null.");
             }
-            var library = await _context.Libraries.FindAsync(id);
-            if (library != null)
+            var author = await _context.Authors.FindAsync(id);
+            if (author != null)
             {
-                _context.Libraries.Remove(library);
+                _context.Authors.Remove(author);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool LibraryExists(int id)
+        private bool AuthorExists(int id)
         {
-          return (_context.Libraries?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Authors?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

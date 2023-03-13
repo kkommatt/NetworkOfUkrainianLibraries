@@ -9,92 +9,90 @@ using NetworkOfLibrariesWebApplication;
 
 namespace NetworkOfLibrariesWebApplication.Controllers
 {
-    public class LibrariesController : Controller
+    public class PublishersController : Controller
     {
         private readonly DbnetworkOfLibrariesContext _context;
 
-        public LibrariesController(DbnetworkOfLibrariesContext context)
+        public PublishersController(DbnetworkOfLibrariesContext context)
         {
             _context = context;
         }
 
-        // GET: Libraries
+        // GET: Publishers
         public async Task<IActionResult> Index()
         {
-            var dbnetworkOfLibrariesContext = _context.Libraries.Include(l => l.City);
+            var dbnetworkOfLibrariesContext = _context.Publishers.Include(p => p.City);
             return View(await dbnetworkOfLibrariesContext.ToListAsync());
         }
 
-        // GET: Libraries/Details/5
+        // GET: Publishers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Libraries == null)
+            if (id == null || _context.Publishers == null)
             {
                 return NotFound();
             }
 
-            var library = await _context.Libraries
-                .Include(bookLibrary => bookLibrary.BookLibraries)
-                .ThenInclude(b => b.Book)
+            var publisher = await _context.Publishers
+                .Include(p => p.City)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (library == null)
+            if (publisher == null)
             {
                 return NotFound();
             }
 
-            //return View(library);
-            return RedirectToAction("Index", "Books", new {id = library.Id, name = library.Name, adress = library.Adress, website = library.Website, schedule = library.Schedule, cityid = library.CityId});
+            return View(publisher);
         }
 
-        // GET: Libraries/Create
+        // GET: Publishers/Create
         public IActionResult Create()
         {
             ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id");
             return View();
         }
 
-        // POST: Libraries/Create
+        // POST: Publishers/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Adress,Website,Schedule,CityId")] Library library)
+        public async Task<IActionResult> Create([Bind("Id,Title,CityId,Owner,Power,Adress")] Publisher publisher)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(library);
+                _context.Add(publisher);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", library.CityId);
-            return View(library);
+            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", publisher.CityId);
+            return View(publisher);
         }
 
-        // GET: Libraries/Edit/5
+        // GET: Publishers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Libraries == null)
+            if (id == null || _context.Publishers == null)
             {
                 return NotFound();
             }
 
-            var library = await _context.Libraries.FindAsync(id);
-            if (library == null)
+            var publisher = await _context.Publishers.FindAsync(id);
+            if (publisher == null)
             {
                 return NotFound();
             }
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", library.CityId);
-            return View(library);
+            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", publisher.CityId);
+            return View(publisher);
         }
 
-        // POST: Libraries/Edit/5
+        // POST: Publishers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Adress,Website,Schedule,CityId")] Library library)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,CityId,Owner,Power,Adress")] Publisher publisher)
         {
-            if (id != library.Id)
+            if (id != publisher.Id)
             {
                 return NotFound();
             }
@@ -103,12 +101,12 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             {
                 try
                 {
-                    _context.Update(library);
+                    _context.Update(publisher);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!LibraryExists(library.Id))
+                    if (!PublisherExists(publisher.Id))
                     {
                         return NotFound();
                     }
@@ -119,51 +117,51 @@ namespace NetworkOfLibrariesWebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", library.CityId);
-            return View(library);
+            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", publisher.CityId);
+            return View(publisher);
         }
 
-        // GET: Libraries/Delete/5
+        // GET: Publishers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Libraries == null)
+            if (id == null || _context.Publishers == null)
             {
                 return NotFound();
             }
 
-            var library = await _context.Libraries
-                .Include(l => l.City)
+            var publisher = await _context.Publishers
+                .Include(p => p.City)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (library == null)
+            if (publisher == null)
             {
                 return NotFound();
             }
 
-            return View(library);
+            return View(publisher);
         }
 
-        // POST: Libraries/Delete/5
+        // POST: Publishers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Libraries == null)
+            if (_context.Publishers == null)
             {
-                return Problem("Entity set 'DbnetworkOfLibrariesContext.Libraries'  is null.");
+                return Problem("Entity set 'DbnetworkOfLibrariesContext.Publishers'  is null.");
             }
-            var library = await _context.Libraries.FindAsync(id);
-            if (library != null)
+            var publisher = await _context.Publishers.FindAsync(id);
+            if (publisher != null)
             {
-                _context.Libraries.Remove(library);
+                _context.Publishers.Remove(publisher);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool LibraryExists(int id)
+        private bool PublisherExists(int id)
         {
-          return (_context.Libraries?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Publishers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
