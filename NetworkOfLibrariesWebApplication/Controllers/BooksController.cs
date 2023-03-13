@@ -76,7 +76,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
                 _context.Add(book);
                 await _context.SaveChangesAsync();
                 //return RedirectToAction(nameof(Index));
-                return RedirectToAction("Index", "Books", new 
+                return RedirectToAction("Index", "Books", new
             }
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Id", book.PublisherId);
             ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Id", book.StyleId);
