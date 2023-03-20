@@ -12,6 +12,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
     public class BooksController : Controller
     {
         private readonly DbnetworkOfLibrariesContext _context;
+        public int? libid;
 
         public BooksController(DbnetworkOfLibrariesContext context)
         {
@@ -28,6 +29,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             ViewBag.LibraryWebsite = website;
             ViewBag.LibrarySchedule = schedule;
             ViewBag.LibraryCityid = cityid;
+            libid = id;
             var library = await _context.Libraries.Include(b => b.BookLibraries).ThenInclude(bl => bl.Book).FirstOrDefaultAsync(book => book.Id == id);
             if(library is null)
                 return RedirectToAction("Libraries", "Index");
@@ -56,11 +58,26 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Books/Create
-        public IActionResult Create()
+        public IActionResult Create(int? libraryId)
         {
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Id");
-            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Id");
-            return View();
+            if (libraryId == null)
+            {
+                return NotFound();
+            }
+
+            var library = _context.Libraries.FirstOrDefault(l => l.Id == libraryId);
+
+            if (library == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Publishers = _context.Publishers.ToList();
+            ViewBag.Styles = _context.Styles.ToList();
+            ViewBag.Authors = _context.Authors.ToList();
+            ViewBag.LibraryId = libraryId;
+
+            return RedirectToAction("Index", "Libraries");
         }
 
         // POST: Books/Create
@@ -68,20 +85,48 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ICollection<Author>? Libraries, [Bind("Id,Title,Year,PublisherId,StyleId,Pages,Annotation,Circulation")] Book book)
+        public async Task<IActionResult> Create(int libraryId, [Bind("Title,Year,PublisherId,StyleId,Pages,Annotation,Circulation")] Book book, int[] authorIds)
         {
-            var id =  _context.Libraries.Include(b => b.BookLibraries).ThenInclude(bl => bl.Book).Select(book => book.Id).FirstOrDefault();
+            var library = _context.Libraries.FirstOrDefault(l => l.Id == libraryId);
+
+            if (library == null)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
-                _context.Add(book);
+                var bookLibrary = new BookLibrary
+                {
+                    Book = book,
+                    Library = library
+                };
+
+                _context.BookLibraries.Add(bookLibrary);
+
+                foreach (var authorId in authorIds)
+                {
+                    var authorBook = new AuthorBook
+                    {
+                        AuthorId = authorId,
+                        Book = book
+                    };
+                    _context.AuthorBooks.Add(authorBook);
+                }
+
                 await _context.SaveChangesAsync();
-                //return RedirectToAction(nameof(Index));
-                return RedirectToAction("Index", "Books", new
+
+                return RedirectToAction("Details", "Libraries", new { id = libraryId });
             }
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Id", book.PublisherId);
-            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Id", book.StyleId);
-            return View(book);
+
+            ViewBag.Publishers = _context.Publishers.ToList();
+            ViewBag.Styles = _context.Styles.ToList();
+            ViewBag.Authors = _context.Authors.ToList();
+            ViewBag.LibraryId = libraryId;
+
+            return RedirectToAction("Index", "Libraries");
         }
+
 
         // GET: Books/Edit/5
         public async Task<IActionResult> Edit(int? id)

@@ -7,7 +7,7 @@
 <h1>Книги за бібліотекою @ViewBag.Name</h1>
 
 <p>
-    @Html.ActionLink("Додати нову книгу", "Create", new {Libraries = ViewBag.Libraries})
+    <a asp-action="Create">Додати книгу</a>
 </p>
 <table class="table">
     <thead>
@@ -57,10 +57,10 @@
                 @Html.DisplayFor(modelItem => item.Circulation)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Publisher.Id)
+                @Html.DisplayFor(modelItem => item.Publisher.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Style.Id)
+                @Html.DisplayFor(modelItem => item.Style.Name)
             </td> -->
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Змінити</a> |
