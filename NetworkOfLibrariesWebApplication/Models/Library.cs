@@ -31,5 +31,6 @@ public partial class Library
 
     public ICollection<Book>? Books => BookLibraries?.Select(bookLibrary => bookLibrary.Book).Where(book => book is not null).ToList();
 
+    [Display(Name = "Місто")]
     public virtual City City { get; set; } = null!;
 }
