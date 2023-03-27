@@ -38,19 +38,18 @@
             </div>
             <div class="form-group">
                 <label asp-for="AuthorBooks" class="control-label"></label>
-                <select asp-for="AuthorBooks" asp-items="@(new SelectList(ViewBag.Authors, "Id", "Name"))" multiple class="form-control"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="BookLibraries" class="control-label"></label>
-                <select asp-for="BookLibraries" asp-items="@(new SelectList(ViewBag.Libraries, "Id", "Name"))" multiple class="form-control"></select>
+                <select asp-for="AuthorBooks" class="form-control" asp-items="ViewBag.Authors"></select>
+                <span asp-validation-for="Authors" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="PublisherId" class="control-label"></label>
-                <select asp-for="PublisherId" class="form-control" asp-items="@(new SelectList(ViewBag.Publishers, "Id", "Name"))"></select>
+                <select asp-for="PublisherId" class="form-control" asp-items="ViewBag.PublisherId"></select>
+                <span asp-validation-for="PublisherId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="StyleId" class="control-label"></label>
-                <select asp-for="StyleId" class="form-control" asp-items="@(new SelectList(ViewBag.Styles, "Id", "Name"))"></select>
+                <select asp-for="StyleId" class="form-control" asp-items="ViewBag.StyleId"></select>
+                <span asp-validation-for="StyleId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

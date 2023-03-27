@@ -40,9 +40,10 @@ public partial class Book
 
     public virtual ICollection<BookLibrary> BookLibraries { get; } = new List<BookLibrary>();
 
+
     public ICollection<Library>? Libraries => BookLibraries?.Select(bookLibrary => bookLibrary.Library).Where(library => library is not null).ToList();
     [Display(Name = "Видавництво")]
-    public virtual Publisher Publisher { get; set; } = null!;
+    public virtual Publisher? Publisher { get; set; } = null!;
     [Display(Name = "Стиль")]
-    public virtual Style Style { get; set; } = null!;
+    public virtual Style? Style { get; set; } = null;
 }

@@ -12,7 +12,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
     public class BooksController : Controller
     {
         private readonly DbnetworkOfLibrariesContext _context;
-        public int? libid;
+       
 
         public BooksController(DbnetworkOfLibrariesContext context)
         {
@@ -29,7 +29,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             ViewBag.LibraryWebsite = website;
             ViewBag.LibrarySchedule = schedule;
             ViewBag.LibraryCityid = cityid;
-            libid = id;
+            DbnetworkOfLibrariesContext.libid = id;
             var library = await _context.Libraries.Include(b => b.BookLibraries).ThenInclude(bl => bl.Book).FirstOrDefaultAsync(book => book.Id == id);
             if(library is null)
                 return RedirectToAction("Libraries", "Index");
@@ -60,6 +60,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // GET: Books/Create
         public IActionResult Create(int? libraryId)
         {
+            libraryId = DbnetworkOfLibrariesContext.libid;
             if (libraryId == null)
             {
                 return NotFound();
@@ -72,12 +73,12 @@ namespace NetworkOfLibrariesWebApplication.Controllers
                 return NotFound();
             }
 
-            ViewBag.Publishers = _context.Publishers.ToList();
-            ViewBag.Styles = _context.Styles.ToList();
-            ViewBag.Authors = _context.Authors.ToList();
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Id");
+            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Id");
+            ViewBag.Authors = new SelectList(_context.Authors, "Id", "Id");
             ViewBag.LibraryId = libraryId;
 
-            return RedirectToAction("Index", "Libraries");
+            return View();
         }
 
         // POST: Books/Create
@@ -85,9 +86,10 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int libraryId, [Bind("Title,Year,PublisherId,StyleId,Pages,Annotation,Circulation")] Book book, int[] authorIds)
+        public async Task<IActionResult> Create(int? libraryId, [Bind("Title,Year,PublisherId,StyleId,Pages,Annotation,Circulation")] Book book, int[] authorIds)
         {
-            var library = _context.Libraries.FirstOrDefault(l => l.Id == libraryId);
+            libraryId = DbnetworkOfLibrariesContext.libid;
+            var library = await _context.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
 
             if (library == null)
             {
@@ -119,8 +121,8 @@ namespace NetworkOfLibrariesWebApplication.Controllers
                 return RedirectToAction("Details", "Libraries", new { id = libraryId });
             }
 
-            ViewBag.Publishers = _context.Publishers.ToList();
-            ViewBag.Styles = _context.Styles.ToList();
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Id", book.PublisherId);
+            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Id", book.StyleId);
             ViewBag.Authors = _context.Authors.ToList();
             ViewBag.LibraryId = libraryId;
 
