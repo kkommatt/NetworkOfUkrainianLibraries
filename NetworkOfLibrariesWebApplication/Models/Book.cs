@@ -45,5 +45,5 @@ public partial class Book
     [Display(Name = "Видавництво")]
     public virtual Publisher? Publisher { get; set; } = null!;
     [Display(Name = "Стиль")]
-    public virtual Style? Style { get; set; } = null;
+    public virtual Style? Style { get; set; } = null!;
 }

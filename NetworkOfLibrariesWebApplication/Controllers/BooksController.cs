@@ -90,7 +90,8 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         {
             libraryId = DbnetworkOfLibrariesContext.libid;
             var library = await _context.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
-
+            book.Style = await _context.Styles.FirstOrDefaultAsync(style => style.Id == book.StyleId);
+            book.Publisher = await _context.Publishers.FirstOrDefaultAsync(publisher => publisher.Id == book.PublisherId);
             if (library == null)
             {
                 return NotFound();
