@@ -99,8 +99,11 @@ namespace NetworkOfLibrariesWebApplication.Controllers
 
             if (ModelState.IsValid)
             {
+                _context.Books.Add(book);
                 var bookLibrary = new BookLibrary
                 {
+                    BookId = book.Id,
+                    LibraryId = library.Id,
                     Book = book,
                     Library = library
                 };
@@ -111,7 +114,9 @@ namespace NetworkOfLibrariesWebApplication.Controllers
                 {
                     var authorBook = new AuthorBook
                     {
+                        Author = await _context.Authors.FirstOrDefaultAsync(author => author.Id == authorId),
                         AuthorId = authorId,
+                        BookId = book.Id,
                         Book = book
                     };
                     _context.AuthorBooks.Add(authorBook);

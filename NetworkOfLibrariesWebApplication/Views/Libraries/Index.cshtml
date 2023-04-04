@@ -56,3 +56,54 @@
 }
     </tbody>
 </table>
+
+<div class="container">
+    <div id="chart1"></div>
+</div>
+<div class="container">
+    <div id="chart2"></div>
+</div>
+@section scripts{
+    <script type "text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+
+                $.get('/api/Chart/JsonData', function(JsonData) {
+                    data = google.visualization.arrayToDataTable(JsonData, false);
+                    var option = {
+                        title: "Співвідношення кількості книжок та бібліотек",
+                        width: 500,
+                        height: 400
+                    };
+                    chart = new google.visualization.PieChart(document.getElementById('chart1'));
+                    chart.draw(data, option);
+                })
+            }
+    </script>
+    <script type "text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart1);
+
+        function drawChart1() {
+
+            $.get('/api/Chart/JsonData1', function (JsonData1) {
+                data = google.visualization.arrayToDataTable(JsonData1, false);
+                var option = {
+                    title: "Співвідношення кількості бібліотек та міст",
+                    width: 500,
+                    height: 400
+                };
+                chart = new google.visualization.PieChart(document.getElementById('chart2'));
+                chart.draw(data, option);
+            })
+        }
+    </script>
+}
+
+
+
+

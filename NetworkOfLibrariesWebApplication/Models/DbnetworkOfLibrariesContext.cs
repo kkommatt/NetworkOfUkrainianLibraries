@@ -23,6 +23,7 @@ public partial class DbnetworkOfLibrariesContext : DbContext
 
     public virtual DbSet<BookLibrary> BookLibraries { get; set; }
 
+
     public virtual DbSet<City> Cities { get; set; }
 
     public virtual DbSet<Library> Libraries { get; set; }
