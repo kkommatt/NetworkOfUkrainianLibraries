@@ -27,18 +27,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Authors/Details/5
-        public async Task<IActionResult> Details(ICollection<Author>? Authors)
-        {
-            var author = await _context.Authors
-                .FirstOrDefaultAsync();
-            if (author == null)
-            {
-                return NotFound();
-            }
-
-            return View(author);
-        }
-      /*  public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Authors == null)
             {
@@ -53,7 +42,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             }
 
             return View(author);
-        }*/
+        }
 
         // GET: Authors/Create
         public IActionResult Create()

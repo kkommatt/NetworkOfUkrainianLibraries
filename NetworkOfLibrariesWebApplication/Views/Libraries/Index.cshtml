@@ -48,9 +48,7 @@
                     <a asp-controller ="Cities" asp-action="Details" asp-route-id="@item.CityId">Переглянути деталі міста</a>
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Змінити</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Переглянути деталі</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+                | <a asp-action="Details" asp-route-id="@item.Id">Переглянути книги</a> |
             </td>
         </tr>
 }
@@ -75,7 +73,7 @@
                     data = google.visualization.arrayToDataTable(JsonData, false);
                     var option = {
                         title: "Співвідношення кількості книжок та бібліотек",
-                        width: 500,
+                        width: 900,
                         height: 400
                     };
                     chart = new google.visualization.PieChart(document.getElementById('chart1'));
@@ -94,7 +92,7 @@
                 data = google.visualization.arrayToDataTable(JsonData1, false);
                 var option = {
                     title: "Співвідношення кількості бібліотек та міст",
-                    width: 500,
+                    width: 900,
                     height: 400
                 };
                 chart = new google.visualization.PieChart(document.getElementById('chart2'));

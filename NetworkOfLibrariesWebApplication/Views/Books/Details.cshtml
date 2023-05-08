@@ -20,7 +20,10 @@
             @Html.DisplayNameFor(model => model.Authors)
         </dt>
         <dd class="col-sm-10">
-            <a asp-controller="Authors" asp-action="Details" asp-route-id="@Model.Authors">Переглянути деталі автора</a>
+            @Html.DisplayFor(model => model.Authors.First().FirstName)
+            @Html.DisplayFor(model => model.Authors.First().Surname)
+            <a asp-controller="Authors" asp-action="Details" asp-route-id="@Model.Authors.First().Id">Переглянути деталі автора</a>
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Year)
         </dt>
@@ -64,5 +67,5 @@
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Змінити</a> 
-    <!--<a asp-action="Index">Повернутися назад</a> ->
+    <!--<a asp-action="Index">Повернутися назад</a> -->
 </div>

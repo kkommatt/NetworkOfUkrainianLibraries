@@ -4,11 +4,11 @@
     ViewData["Title"] = "Видалити";
 }
 
-<h1>Delete</h1>
+<h1>Видалити</h1>
 
 <h3>Ви впевнені, що хочете видалити цю книгу?</h3>
 <div>
-    <h4>Book</h4>
+    <h4>Книга</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -16,6 +16,13 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Authors)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Authors.First().FirstName)
+            @Html.DisplayFor(model => model.Authors.First().Surname)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Year)
@@ -45,19 +52,18 @@
             @Html.DisplayNameFor(model => model.Publisher)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Publisher.Id)
+            @Html.DisplayFor(model => model.Publisher.Title)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Style)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Style.Id)
+            @Html.DisplayFor(model => model.Style.Name)
         </dd>
     </dl>
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Назад до списку</a>
+        <input type="submit" value="Видалити" class="btn btn-danger" /> 
     </form>
 </div>

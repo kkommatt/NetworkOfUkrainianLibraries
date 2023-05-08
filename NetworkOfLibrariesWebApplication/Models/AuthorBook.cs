@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NetworkOfLibrariesWebApplication;
-
-public partial class AuthorBook
+[Table("AuthorBooks")]
+public class AuthorBook
 {
     public int AuthorId { get; set; }
 
     public int BookId { get; set; }
 
+    [Key]
     public int Id { get; set; }
 
     public virtual Author Author { get; set; } = null!;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NetworkOfLibrariesWebApplication;
 
@@ -36,10 +37,13 @@ public partial class Book
 
     public virtual ICollection<AuthorBook> AuthorBooks { get; } = new List<AuthorBook>();
 
+    [Display(Name = "Автор")]
     public ICollection<Author>? Authors => AuthorBooks?.Select(authorBook => authorBook.Author).Where(author => author is not null).ToList();
 
-    public virtual ICollection<BookLibrary> BookLibraries { get; } = new List<BookLibrary>();
+    [NotMapped]
+    public int[]? AuthorId { get; set; }
 
+    public virtual ICollection<BookLibrary> BookLibraries { get; } = new List<BookLibrary>();
 
     public ICollection<Library>? Libraries => BookLibraries?.Select(bookLibrary => bookLibrary.Library).Where(library => library is not null).ToList();
     [Display(Name = "Видавництво")]

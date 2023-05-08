@@ -33,6 +33,8 @@ public partial class DbnetworkOfLibrariesContext : DbContext
     public virtual DbSet<Style> Styles { get; set; }
 
     public static int? libid { get; set; }
+    public static int? auid { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,8 +46,9 @@ public partial class DbnetworkOfLibrariesContext : DbContext
             entity.Property(e => e.Surname).HasMaxLength(50);
         });
 
-        modelBuilder.Entity<AuthorBook>(entity =>
+        /*modelBuilder.Entity<AuthorBook>(entity =>
         {
+            entity.ToTable("AuthorBooks");
             entity.HasOne(d => d.Author).WithMany(p => p.AuthorBooks)
                 .HasForeignKey(d => d.AuthorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -54,14 +57,13 @@ public partial class DbnetworkOfLibrariesContext : DbContext
             entity.HasOne(d => d.Book).WithMany(p => p.AuthorBooks)
                 .HasForeignKey(d => d.BookId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_AuthorBooks_Book");
-        });
+                .HasConstraintName("FK_AuthorBooks_Books"); 
+        });*/
 
         modelBuilder.Entity<Book>(entity =>
         {
             entity.Property(e => e.Annotation).HasMaxLength(100);
             entity.Property(e => e.Title).HasMaxLength(50);
-
             entity.HasOne(d => d.Publisher).WithMany(p => p.Books)
                 .HasForeignKey(d => d.PublisherId)
                 .OnDelete(DeleteBehavior.ClientSetNull)

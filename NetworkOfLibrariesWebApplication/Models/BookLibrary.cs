@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NetworkOfLibrariesWebApplication;
-
+[Table("BookLibraries")]
 public partial class BookLibrary
 {
     public int BookId { get; set; }
 
     public int LibraryId { get; set; }
 
+    [Key]
     public int Id { get; set; }
 
     public virtual Book Book { get; set; } = null!;

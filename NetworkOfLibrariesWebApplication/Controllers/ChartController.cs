@@ -41,5 +41,17 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             }
             return new JsonResult(cityLibrary);
         }
+        [HttpGet("JsonData2")]
+        public JsonResult JsonData2()
+        {
+            var books = _context.Books.OrderBy(book => book.Year).ToList();
+            List<object> bookYear = new List<object>();
+            bookYear.Add(new[] { "Рік", "Кількість книг" });
+            for(int year = 1950; year <= 2023; year++)
+            {
+                bookYear.Add(new object[] {year, _context.Books.Where(book => book.Year == year).Count()});
+            }
+            return new JsonResult(bookYear);
+        }
     }
 }

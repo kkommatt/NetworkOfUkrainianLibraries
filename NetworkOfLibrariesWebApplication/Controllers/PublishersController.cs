@@ -47,7 +47,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // GET: Publishers/Create
         public IActionResult Create()
         {
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id");
+            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Name");
             return View();
         }
 
@@ -64,7 +64,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", publisher.CityId);
+            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Name", publisher.CityId);
             return View(publisher);
         }
 
@@ -81,7 +81,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             {
                 return NotFound();
             }
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", publisher.CityId);
+            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Name", publisher.CityId);
             return View(publisher);
         }
 
@@ -117,7 +117,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id", publisher.CityId);
+            ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Name", publisher.CityId);
             return View(publisher);
         }
 

@@ -6,17 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NetworkOfLibrariesWebApplication;
+using Microsoft.Data.SqlClient;
+using System.Net;
 
 namespace NetworkOfLibrariesWebApplication.Controllers
 {
     public class BooksController : Controller
     {
         private readonly DbnetworkOfLibrariesContext _context;
-       
+        private readonly string _connectionString;
 
         public BooksController(DbnetworkOfLibrariesContext context)
         {
             _context = context;
+            _connectionString = "Server= (LocalDb)\\MSSQLLocalDB; Database=DBNetworkOfLibraries; Trusted_Connection=True; MultipleActiveResultSets=true";
         }
 
         // GET: Books
@@ -30,9 +33,10 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             ViewBag.LibrarySchedule = schedule;
             ViewBag.LibraryCityid = cityid;
             DbnetworkOfLibrariesContext.libid = id;
-            var library = await _context.Libraries.Include(b => b.BookLibraries).ThenInclude(bl => bl.Book).FirstOrDefaultAsync(book => book.Id == id);
+            var library = await _context.Libraries.Include(b => b.BookLibraries).ThenInclude(bl => bl.Book).ThenInclude(bl => bl.AuthorBooks).ThenInclude(bl => bl.Author).FirstOrDefaultAsync(book => book.Id == id);
             if(library is null)
                 return RedirectToAction("Libraries", "Index");
+
             var booksByLibrary = library.BookLibraries.Select(bookLibrary => bookLibrary.Book);
             return View(booksByLibrary.ToList());
         }
@@ -48,6 +52,8 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             var book = await _context.Books
                 .Include(b => b.Publisher)
                 .Include(b => b.Style)
+                .Include(b => b.AuthorBooks)
+                .ThenInclude(b => b.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
@@ -73,9 +79,9 @@ namespace NetworkOfLibrariesWebApplication.Controllers
                 return NotFound();
             }
 
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Id");
-            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Id");
-            ViewBag.Authors = new SelectList(_context.Authors, "Id", "Id");
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Title");
+            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Name");
+            ViewBag.AuthorId = new SelectList(_context.Authors, "Id", "Surname");
             ViewBag.LibraryId = libraryId;
 
             return View();
@@ -86,8 +92,9 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int? libraryId, [Bind("Title,Year,PublisherId,StyleId,Pages,Annotation,Circulation")] Book book, int[] authorIds)
+        public async Task<IActionResult> Create(int? libraryId, [Bind("Title,Year,PublisherId,StyleId,Pages,Annotation,Circulation, AuthorId")] Book book)
         {
+            int authorId = book.AuthorId.First();
             libraryId = DbnetworkOfLibrariesContext.libid;
             var library = await _context.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
             book.Style = await _context.Styles.FirstOrDefaultAsync(style => style.Id == book.StyleId);
@@ -96,43 +103,51 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             {
                 return NotFound();
             }
-
             if (ModelState.IsValid)
             {
+                library.Books.Add(book);
                 _context.Books.Add(book);
-                var bookLibrary = new BookLibrary
+                await _context.SaveChangesAsync();
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    BookId = book.Id,
-                    LibraryId = library.Id,
-                    Book = book,
-                    Library = library
-                };
+                    await connection.OpenAsync();
+                        string insertBookLibraryQuery = "INSERT INTO BookLibraries (BookId, LibraryId) " +
+                                                        "VALUES (@BookId, @LibraryId)";
+                        using (SqlCommand command = new SqlCommand(insertBookLibraryQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@BookId", book.Id);
+                            command.Parameters.AddWithValue("@LibraryId", libraryId);
 
-                _context.BookLibraries.Add(bookLibrary);
+                            await command.ExecuteNonQueryAsync();
+                        }
+                    
 
-                foreach (var authorId in authorIds)
-                {
-                    var authorBook = new AuthorBook
-                    {
-                        Author = await _context.Authors.FirstOrDefaultAsync(author => author.Id == authorId),
-                        AuthorId = authorId,
-                        BookId = book.Id,
-                        Book = book
-                    };
-                    _context.AuthorBooks.Add(authorBook);
+                    // Add book to authors
+
+                        string insertAuthorBookQuery = "INSERT INTO AuthorBooks (AuthorId, BookId) " +
+                                                        "VALUES (@AuthorId, @BookId)";
+                        using (SqlCommand command = new SqlCommand(insertAuthorBookQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@AuthorId", authorId);
+                            command.Parameters.AddWithValue("@BookId", book.Id);
+
+                            await command.ExecuteNonQueryAsync();
+                        }
                 }
 
+
+                
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction("Details", "Libraries", new { id = libraryId });
             }
 
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Id", book.PublisherId);
-            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Id", book.StyleId);
-            ViewBag.Authors = _context.Authors.ToList();
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Title", book.PublisherId);
+            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Name", book.StyleId);
+            ViewBag.AuthorId = new SelectList(_context.Authors, "Id", "Surname");
             ViewBag.LibraryId = libraryId;
 
-            return RedirectToAction("Index", "Libraries");
+            return RedirectToAction("Details", "Libraries", new { id = libraryId });
         }
 
 
@@ -149,8 +164,9 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             {
                 return NotFound();
             }
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Id", book.PublisherId);
-            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Id", book.StyleId);
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Title", book.PublisherId);
+            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Name", book.StyleId);
+            ViewBag.AuthorId = new SelectList(_context.Authors, "Id", "Surname");
             return View(book);
         }
 
@@ -159,19 +175,29 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Year,PublisherId,StyleId,Pages,Annotation,Circulation")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Year,PublisherId,StyleId,Pages,Annotation,Circulation, AuthorId")] Book book)
         {
             if (id != book.Id)
             {
                 return NotFound();
             }
-
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(book);
                     await _context.SaveChangesAsync();
+                    using (SqlConnection connection = new SqlConnection(_connectionString))
+                    {
+                        connection.OpenAsync();
+                        string updateAuthorBookQuery = "UPDATE AuthorBooks SET AuthorId = @AuthorId WHERE BookId = @BookId";
+                        using (SqlCommand command = new SqlCommand(updateAuthorBookQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@AuthorId", book.AuthorId.First());
+                            command.Parameters.AddWithValue("@BookId", book.Id);
+                            await command.ExecuteNonQueryAsync();
+                        }
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -184,10 +210,11 @@ namespace NetworkOfLibrariesWebApplication.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Libraries", new { id = DbnetworkOfLibrariesContext.libid });
             }
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Id", book.PublisherId);
-            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Id", book.StyleId);
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Title", book.PublisherId);
+            ViewData["StyleId"] = new SelectList(_context.Styles, "Id", "Name", book.StyleId);
+            ViewBag.AuthorId = new SelectList(_context.Authors, "Id", "Surname");
             return View(book);
         }
 
@@ -202,6 +229,8 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             var book = await _context.Books
                 .Include(b => b.Publisher)
                 .Include(b => b.Style)
+                .Include(b => b.AuthorBooks)
+                .ThenInclude(b => b.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
@@ -223,11 +252,28 @@ namespace NetworkOfLibrariesWebApplication.Controllers
             var book = await _context.Books.FindAsync(id);
             if (book != null)
             {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+                    string deleteAuthorBookQuery = "DELETE FROM AuthorBooks WHERE BookId = @BookId";
+                    using (SqlCommand command = new SqlCommand(deleteAuthorBookQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@BookId", id);
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    string deleteBookLibrary = "DELETE FROM BookLibraries WHERE BookId = @BookId";
+                    using (SqlCommand command = new SqlCommand(deleteBookLibrary, connection))
+                    {
+                        command.Parameters.AddWithValue("@BookId", id);
+                        await command.ExecuteNonQueryAsync();
+                    }
+                }
                 _context.Books.Remove(book);
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Details", "Libraries", new { id = DbnetworkOfLibrariesContext.libid });
         }
 
         private bool BookExists(int id)

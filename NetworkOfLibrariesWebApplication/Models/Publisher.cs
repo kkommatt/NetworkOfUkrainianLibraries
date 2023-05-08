@@ -30,5 +30,6 @@ public partial class Publisher
 
     public virtual ICollection<Book> Books { get; } = new List<Book>();
 
+    [Display(Name = "Місто")]
     public virtual City City { get; set; } = null!;
 }
