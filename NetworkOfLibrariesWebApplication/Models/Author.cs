@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NetworkOfLibrariesWebApplication;
 
-public partial class Author
+public partial class Author : Entity
 {
     public int Id { get; set; }
 

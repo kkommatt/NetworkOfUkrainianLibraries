@@ -1,0 +1,22 @@
+﻿@model NetworkOfLibrariesWebApplication.Library
+@{
+    ViewData["Title"] = "Імпорт";
+}
+<h1>Імпорт</h1>
+<div class="row">
+    <div class="col-12">
+        @using (Html.BeginForm("Import", "Libraries",
+        FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+                <div class="mb-3">
+                    <label for="librariesFile" class="form-label">Оберіть файл для завантаження</label>
+                    <input type="file" name="librariesFile"
+                           id="librariesFile" />
+                </div>
+                <div>
+                    <input class="btn btn-primary mb-3"
+                           type="submit" value="Завантажити" />
+                </div>
+        }
+    </div>
+</div>

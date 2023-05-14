@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NetworkOfLibrariesWebApplication;
 [Table("AuthorBooks")]
-public class AuthorBook
+public class AuthorBook : Entity
 {
     public int AuthorId { get; set; }
 

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NetworkOfLibrariesWebApplication;
 [Table("BookLibraries")]
-public partial class BookLibrary
+public partial class BookLibrary : Entity
 {
     public int BookId { get; set; }
 

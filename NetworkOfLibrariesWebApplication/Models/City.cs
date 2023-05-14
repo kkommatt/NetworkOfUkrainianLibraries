@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NetworkOfLibrariesWebApplication;
 
-public partial class City
+public partial class City : Entity
 {
     public int Id { get; set; }
 
