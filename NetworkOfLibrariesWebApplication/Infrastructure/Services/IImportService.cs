@@ -150,7 +150,7 @@ namespace NetworkOfLibrariesWebApplication.Infrastructure.Services
             "Адреса",
             "Веб-сайт",
             "Розклад",
-            "Місто Id",
+            "Місто",
         };
         private readonly DbnetworkOfLibrariesContext context;
 
