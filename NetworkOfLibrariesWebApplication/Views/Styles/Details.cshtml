@@ -1,4 +1,7 @@
 ﻿@model NetworkOfLibrariesWebApplication.Style
+@using Microsoft.AspNetCore.Identity;
+@using NetworkOfLibrariesWebApplication.Infrastructure.Identity;
+@using NetworkOfLibrariesWebApplication.Infrastructure.Identity.Extensions;
 
 @{
     ViewData["Title"] = "Деталі";
@@ -31,6 +34,23 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Змінити</a> |
-    <a asp-action="Index">До списку стилів</a>
+                    @inject UserManager<ApplicationUser> UserManager
+                    @inject SignInManager<ApplicationUser> SignInManager
+                    @{
+                        var isAdmin = false;
+                        if (SignInManager.IsSignedIn(User))
+                        {
+                            var applicationUser = await UserManager.GetUserAsync(User);
+                            if (applicationUser is not null)
+                            {
+                                isAdmin = await UserManager.IsInRoleAsync(applicationUser, "Admin");
+                            }
+                            if (isAdmin)
+                            {
+                                <a asp-action="Edit" asp-route-id="@Model?.Id">Змінити</a>
+                            }
+                        }
+                        }
+                        
+    <a asp-action="Index"> | До списку стилів</a>
 </div>

@@ -12,6 +12,8 @@ using static ClosedXML.Excel.XLProtectionAlgorithm;
 using NetworkOfLibrariesWebApplication;
 using Microsoft.Data.SqlClient;
 using NetworkOfLibrariesWebApplication.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
+using NetworkOfLibrariesWebApplication.Infrastructure.Identity.Extensions;
 
 namespace NetworkOfLibrariesWebApplication.Controllers
 {
@@ -34,6 +36,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Libraries/Details/5
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Libraries == null)
@@ -55,6 +58,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Libraries/Create
+        [Authorize(Roles = RoleNames.Admin)]
         public IActionResult Create()
         {
             ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Id");
@@ -66,6 +70,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<IActionResult> Create([Bind("Id,Name,Adress,Website,Schedule,CityId")] Library library)
         {
             if (ModelState.IsValid)
@@ -79,6 +84,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Libraries/Edit/5
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Libraries == null)
@@ -100,6 +106,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Adress,Website,Schedule,CityId")] Library library)
         {
             if (id != library.Id)
@@ -132,6 +139,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Libraries/Delete/5
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Libraries == null)
@@ -153,6 +161,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // POST: Libraries/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Libraries == null)
@@ -175,11 +184,13 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = RoleNames.Admin)]
         public IActionResult Import()
         {
             return View();
         }
         [HttpPost]
+        [Authorize(Roles = RoleNames.Admin)]
         public async Task<IActionResult> Import(IFormFile librariesFile, CancellationToken cancellationToken)
         {
             LibraryDataPortServiceFactory factorylib = new LibraryDataPortServiceFactory(_context);
@@ -190,6 +201,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> Export([FromQuery] string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", CancellationToken cancellationToken = default)
         {
             LibraryDataPortServiceFactory factorylib = new LibraryDataPortServiceFactory(_context);

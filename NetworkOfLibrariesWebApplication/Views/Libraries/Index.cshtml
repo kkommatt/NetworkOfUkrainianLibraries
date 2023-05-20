@@ -1,5 +1,7 @@
 ﻿@model IEnumerable<NetworkOfLibrariesWebApplication.Library>
-
+@using Microsoft.AspNetCore.Identity;
+@using NetworkOfLibrariesWebApplication.Infrastructure.Identity;
+@using NetworkOfLibrariesWebApplication.Infrastructure.Identity.Extensions;
 @{
     ViewData["Title"] = "Бібліотеки України";
 }
@@ -45,10 +47,24 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.City.Name)
-                    <a asp-controller ="Cities" asp-action="Details" asp-route-id="@item.CityId">Переглянути деталі міста</a>
+                    @inject UserManager<ApplicationUser> UserManager
+                    @inject SignInManager<ApplicationUser> SignInManager
+                    @{
+                        if (SignInManager.IsSignedIn(User))
+                        {
+                            <a asp-controller ="Cities" asp-action="Details" asp-route-id="@item.CityId">Переглянути деталі міста</a>
+                        }
+                        }
             </td>
             <td>
-                | <a asp-action="Details" asp-route-id="@item.Id">Переглянути книги</a> |
+                    @inject UserManager<ApplicationUser> UserManager
+                    @inject SignInManager<ApplicationUser> SignInManager
+                    @{
+                        if (SignInManager.IsSignedIn(User))
+                        {
+                            <a asp-action="Details" asp-route-id="@item.Id">Переглянути книги</a> 
+                        }
+                        }
             </td>
         </tr>
 }
@@ -63,8 +79,30 @@
 </div>
 
 <div>
-    <a class="btn btn-primary mb-3" type="submit" asp-area="" asp-controller="Libraries" asp-action="Import">Завантажити дані з файлу</a>
-    <a class="btn btn-primary mb-3" type="submit" asp-area="" asp-controller="Libraries" asp-action="Export">Експортувати дані у файл</a>
+    @inject UserManager<ApplicationUser> UserManager
+    @inject SignInManager<ApplicationUser> SignInManager
+    @{
+        var isAdmin = false;
+        if (SignInManager.IsSignedIn(User))
+        {
+            var applicationUser = await UserManager.GetUserAsync(User);
+            if (applicationUser is not null)
+            {
+                isAdmin = await UserManager.IsInRoleAsync(applicationUser, "Admin");
+            }
+            if (isAdmin)
+            {
+                <a class="btn btn-primary mb-3" type="submit" asp-area="" asp-controller="Libraries" asp-action="Import">Завантажити дані з файлу</a>
+            }
+        }
+    }
+
+    @{
+        if (SignInManager.IsSignedIn(User))
+        {
+            <a class="btn btn-primary mb-3" type="submit" asp-area="" asp-controller="Libraries" asp-action="Export">Експортувати дані у файл</a>
+        }
+    }
 </div>
 
 @section scripts{

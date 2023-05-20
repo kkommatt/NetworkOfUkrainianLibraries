@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using NetworkOfLibrariesWebApplication;
 using Microsoft.Data.SqlClient;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NetworkOfLibrariesWebApplication.Controllers
 {
@@ -23,6 +24,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Books
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> Index(int? id, string? name, string? adress, string? website, string? schedule, int? cityid)
         {
             if (id == null) return RedirectToAction("Libraries", "Index");
@@ -42,6 +44,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Books/Details/5
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Books == null)
@@ -64,6 +67,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Books/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(int? libraryId)
         {
             libraryId = DbnetworkOfLibrariesContext.libid;
@@ -92,6 +96,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(int? libraryId, [Bind("Title,Year,PublisherId,StyleId,Pages,Annotation,Circulation, AuthorId")] Book book)
         {
             int authorId = book.AuthorId.First();
@@ -152,6 +157,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
 
 
         // GET: Books/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Books == null)
@@ -175,6 +181,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Year,PublisherId,StyleId,Pages,Annotation,Circulation, AuthorId")] Book book)
         {
             if (id != book.Id)
@@ -219,6 +226,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Books/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Books == null)
@@ -243,6 +251,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // POST: Books/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Books == null)

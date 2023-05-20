@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Publishers/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["CityId"] = new SelectList(_context.Cities, "Id", "Name");
@@ -56,6 +58,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Title,CityId,Owner,Power,Adress")] Publisher publisher)
         {
             if (ModelState.IsValid)
@@ -69,6 +72,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Publishers/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Publishers == null)
@@ -90,6 +94,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,CityId,Owner,Power,Adress")] Publisher publisher)
         {
             if (id != publisher.Id)
@@ -122,6 +127,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Publishers/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Publishers == null)
@@ -143,6 +149,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // POST: Publishers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Publishers == null)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Styles/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -55,6 +57,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Name,Type,Info")] Style style)
         {
             if (ModelState.IsValid)
@@ -67,6 +70,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Styles/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Styles == null)
@@ -87,6 +91,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Info")] Style style)
         {
             if (id != style.Id)
@@ -118,6 +123,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         }
 
         // GET: Styles/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Styles == null)
@@ -138,6 +144,7 @@ namespace NetworkOfLibrariesWebApplication.Controllers
         // POST: Styles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Styles == null)

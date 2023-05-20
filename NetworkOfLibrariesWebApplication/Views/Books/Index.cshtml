@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<NetworkOfLibrariesWebApplication.Book>
+@using Microsoft.AspNetCore.Identity;
+@using NetworkOfLibrariesWebApplication.Infrastructure.Identity;
+@using NetworkOfLibrariesWebApplication.Infrastructure.Identity.Extensions;
 
 @{
     ViewData["Title"] = "Книги за бібліотекою";
@@ -7,7 +10,23 @@
 <h1>Книги за бібліотекою @ViewBag.Name</h1>
 
 <p>
-    <a asp-action="Create">Додати книгу</a>
+    @inject UserManager<ApplicationUser> UserManager
+    @inject SignInManager<ApplicationUser> SignInManager
+    @{
+        var isAdmin = false;
+        if (SignInManager.IsSignedIn(User))
+        {
+            var applicationUser = await UserManager.GetUserAsync(User);
+            if (applicationUser is not null)
+            {
+                isAdmin = await UserManager.IsInRoleAsync(applicationUser, "Admin");
+            }
+            if (isAdmin)
+            {
+                <a asp-action="Create">Додати книгу</a>
+            }
+        }
+        }
 </p>
 <table class="table">
     <thead>
@@ -70,9 +89,37 @@
                 @Html.DisplayFor(modelItem => item.Style.Name)
             </td> -->
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Змінити</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Переглянути деталі</a> |
+                 @{
+        isAdmin = false;
+        if (SignInManager.IsSignedIn(User))
+        {
+            var applicationUser = await UserManager.GetUserAsync(User);
+            if (applicationUser is not null)
+            {
+                isAdmin = await UserManager.IsInRoleAsync(applicationUser, "Admin");
+            }
+            if (isAdmin)
+            {
+                <a asp-action="Edit" asp-route-id="@item.Id">Змінити</a> 
+            }
+        }
+        }
+                    | <a asp-action="Details" asp-route-id="@item.Id">Переглянути деталі</a> |
+        @{
+        isAdmin = false;
+        if (SignInManager.IsSignedIn(User))
+        {
+            var applicationUser = await UserManager.GetUserAsync(User);
+            if (applicationUser is not null)
+            {
+                isAdmin = await UserManager.IsInRoleAsync(applicationUser, "Admin");
+            }
+            if (isAdmin)
+            {
                 <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+            }
+        }
+        }
             </td>
         </tr>
 }
